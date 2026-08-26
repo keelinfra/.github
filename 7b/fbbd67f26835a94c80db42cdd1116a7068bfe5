@@ -1,0 +1,57 @@
+README.md
+  s_021f4e55466d20::t_568c024fc67964 1-10
+assets/src/banner-linkedin.html
+  s_021f4e55466d20::t_4ad816ed92529a 1-32
+assets/src/social-preview-keycloak.html
+  s_021f4e55466d20::t_4ad816ed92529a 1-40
+assets/src/build.sh
+  s_021f4e55466d20::t_51bc1fd04975c3 1-36
+assets/src/banner-x.html
+  s_021f4e55466d20::t_4ad816ed92529a 1-32
+assets/src/wordmark-textpaths.svg.frag
+  s_021f4e55466d20::t_4ad816ed92529a 1
+assets/src/sizes.json
+  s_021f4e55466d20::t_4ad816ed92529a 1
+assets/src/wordmark.json
+  s_021f4e55466d20::t_4ad816ed92529a 1
+assets/src/social-preview.html
+  s_021f4e55466d20::t_4ad816ed92529a 1-39
+assets/src/banner-linkedin-company.html
+  s_021f4e55466d20::t_4ad816ed92529a 1-32
+assets/README.md
+  s_021f4e55466d20::t_6c41965ee181cd 1-53
+profile/README.md
+  s_021f4e55466d20::t_05f04cdc149e3d 1-35
+assets/logo-mark-amber.svg
+  s_021f4e55466d20::t_092a658bcf3e9f 1-3
+assets/logo-mark-navy.svg
+  s_021f4e55466d20::t_9d22860b6b3d66 1-3
+assets/logo.svg
+  s_021f4e55466d20::t_3863351b75a189 1-3
+assets/src/build_banners.py
+  s_021f4e55466d20::t_10df10bad931ac 1-172
+assets/src/compose_svgs.py
+  s_021f4e55466d20::t_2240c033e5485f 1-76
+assets/src/wordmark_paths.py
+  s_021f4e55466d20::t_eeae50d76539b0 1-59
+assets/wordmark-dark.svg
+  s_021f4e55466d20::t_d7f4082f32b038 1-4
+assets/wordmark-light.svg
+  s_021f4e55466d20::t_ea88f2f3d2cbee 1-4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "7bfbbd67f26835a94c80db42cdd1116a7068bfe5",
+  "prompts": {},
+  "sessions": {
+    "s_021f4e55466d20": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6f21185-c836-4673-a35f-6e6e258035a1",
+        "model": "claude-fable-5"
+      },
+      "human_author": "shenxianpeng <xianpeng.shen@gmail.com>"
+    }
+  }
+}
