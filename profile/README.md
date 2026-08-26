@@ -11,7 +11,7 @@
 
 HA · Backups & PITR · Observability · Tested upgrades — on your own machines, in one command.
 
-[keelinfra.io](https://keelinfra.io) · [Pricing](https://keelinfra.io/pricing)
+[keelinfra.io](https://keelinfra.io) · [Docs](https://keelinfra.io/docs/keycloak/) · [Pricing](https://keelinfra.io/pricing)
 
 </div>
 
