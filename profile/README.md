@@ -24,7 +24,6 @@ Built for teams that can't or won't hand their data to a managed cloud: regulate
 | Project | What it is | Status |
 |---|---|---|
 | [**keycloak**](https://github.com/keelinfra/keycloak) | HA Keycloak distribution: Patroni-managed PostgreSQL, pgBackRest PITR, Prometheus/Grafana, tested upgrade paths | 🟢 working |
-| **openbao** | The same treatment for OpenBao (secrets) | ⚪ coming next |
 
 ```bash
 git clone https://github.com/keelinfra/keycloak && cd keycloak
