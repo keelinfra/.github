@@ -21,9 +21,9 @@ Great open-source infrastructure is easy to start and hard to run. keelinfra shi
 
 Built for teams that can't or won't hand their data to a managed cloud: regulated industries, data residency, air-gapped environments.
 
-| Project | What it is | Status |
-|---|---|---|
-| [**keycloak**](https://github.com/keelinfra/keycloak) | HA Keycloak distribution: Patroni-managed PostgreSQL, pgBackRest PITR, Prometheus/Grafana, tested upgrade paths | 🟢 working |
+### [keelinfra/keycloak →](https://github.com/keelinfra/keycloak)
+
+**Production-ready, self-hosted Keycloak.** HA cluster, Patroni-managed PostgreSQL with automatic failover, pgBackRest backups & point-in-time recovery, Prometheus/Grafana monitoring, and upgrade paths tested against upstream releases.
 
 ```bash
 git clone https://github.com/keelinfra/keycloak && cd keycloak
