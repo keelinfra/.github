@@ -23,6 +23,8 @@ Built for teams that can't or won't hand their data to a managed cloud: regulate
 
 ### [keelinfra/keycloak →](https://github.com/keelinfra/keycloak)
 
-**Production-ready, self-hosted Keycloak.** HA cluster, Patroni-managed PostgreSQL with automatic failover, pgBackRest backups & point-in-time recovery, Prometheus/Grafana monitoring, and upgrade paths tested against upstream releases — installed in ~10 minutes on 3 clean VMs.
+**Production-ready, self-hosted Keycloak.** HA cluster, Patroni-managed PostgreSQL with automatic failover, pgBackRest backups & point-in-time recovery, Prometheus/Grafana monitoring, and upgrade paths tested against upstream releases.
 
-The distributions are free and Apache-2.0. A [per-node subscription](https://keelinfra.io/pricing) adds offline bundles, CVE tracking, upgrade runbooks, and direct access to the people who build it.
+---
+
+<sub>The distributions are free and Apache-2.0. A [per-node subscription](https://keelinfra.io/pricing) adds offline bundles, CVE tracking, upgrade runbooks, and direct access to the people who build it.</sub>
