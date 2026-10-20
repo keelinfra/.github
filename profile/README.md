@@ -27,7 +27,7 @@ Built for teams that can't or won't hand their data to a managed cloud, and for 
 
 ### [keelinfra/agent8 →](https://github.com/keelinfra/agent8)
 
-**Agent8 for Jenkins: run Jenkins agents on hosts stuck on Java 8, 11 or 17.** Current Jenkins needs Java 21 on every agent, which RHEL/CentOS 6, AIX, Solaris and HP-UX build hosts can't run. Agent8 is the Jenkins agent, built to run on their Java, so they stay ordinary nodes of an up-to-date controller. Available and free: an install script with checksum verification, an Ansible playbook for fleets, and a release tested for each Jenkins version. Linux (HotSpot and OpenJ9) is tested in CI; AIX, Solaris and HP-UX are experimental. [Why it's needed →](https://keelinfra.io/blog/jenkins-java-21-aix-rhel6-build-hosts/) · [Help with a rollout →](https://keelinfra.io/jenkins-assessment/)
+**Agent8 for Jenkins: run Jenkins agents on hosts stuck on Java 8, 11 or 17.** Current Jenkins needs Java 21 on every agent, which many AIX, Solaris and HP-UX build hosts can't run. Agent8 is the Jenkins agent, built to run on their Java, so they stay ordinary nodes of an up-to-date controller. Available and free: an install script with checksum verification, an Ansible playbook for fleets, and a release tested for each Jenkins version. Linux (HotSpot and OpenJ9) is tested in CI; AIX, Solaris and HP-UX have been tested. [Why it's needed →](https://keelinfra.io/blog/jenkins-java-21-aix-rhel6-build-hosts/) · [Help with a rollout →](https://keelinfra.io/jenkins-assessment/)
 
 ---
 
