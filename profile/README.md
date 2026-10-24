@@ -7,28 +7,26 @@
        src="https://raw.githubusercontent.com/keelinfra/.github/main/assets/wordmark-light.svg">
 </picture>
 
-**Production-ready, self-hosted open-source infrastructure.**
+**Open-source tools that keep Jenkins and its build hosts current.**
 
-Self-hosted Keycloak · Jenkins agents for legacy build hosts — on your own machines, tested in public CI.
+Jenkins agents for legacy build hosts · a tested upgrade path for old controllers — proven in public CI.
 
-[keelinfra.io](https://keelinfra.io) · [Keycloak docs](https://keelinfra.io/docs/keycloak/) · [Agent8](https://github.com/keelinfra/agent8)
+[keelinfra.io](https://keelinfra.io) · [Agent8](https://github.com/keelinfra/agent8) · [Upgrade matrix](https://keelinfra.io/jenkins/upgrade-matrix/)
 
 </div>
 
 ---
 
-Great open-source infrastructure is easy to start and hard to run. keelinfra ships distributions that package what every team ends up building by hand — clustering, HA databases, backup and point-in-time recovery, monitoring, and upgrade paths that are actually tested against every upstream release.
-
-Built for teams that can't or won't hand their data to a managed cloud, and for the long tail of machines that can't simply be upgraded: regulated industries, data residency, air-gapped environments, legacy build hosts.
-
-### [keelinfra/keycloak →](https://github.com/keelinfra/keycloak)
-
-**Production-ready, self-hosted Keycloak.** HA cluster, Patroni-managed PostgreSQL with automatic failover, pgBackRest backups & point-in-time recovery, Prometheus/Grafana monitoring, and upgrade paths tested against upstream releases.
+Jenkins moves fast; the machines around it don't. Controllers sit on old LTS lines because nobody knows which plugins will break, and build hosts on AIX, Solaris and HP-UX can't run the Java a current agent needs. keelinfra builds the tools and publishes the test data that get them current again.
 
 ### [keelinfra/agent8 →](https://github.com/keelinfra/agent8)
 
 **Agent8 for Jenkins: run Jenkins agents on hosts stuck on Java 8, 11 or 17.** Current Jenkins needs Java 21 on every agent, which many AIX, Solaris and HP-UX build hosts can't run. Agent8 is the Jenkins agent, built to run on their Java, so they stay ordinary nodes of an up-to-date controller. Available and free: an install script with checksum verification, an Ansible playbook for fleets, and a release tested for each Jenkins version. Linux (HotSpot and OpenJ9) is tested in CI; AIX, Solaris and HP-UX have been tested. [Why it's needed →](https://keelinfra.io/blog/jenkins-java-21-aix-rhel6-build-hosts/) · [Help with a rollout →](https://keelinfra.io/jenkins-assessment/)
 
+### [Jenkins upgrade matrix →](https://keelinfra.io/jenkins/upgrade-matrix/)
+
+**Which Jenkins LTS lines can go straight to 2.580.1, and which need to stop on the way.** 328 rehearsed Jenkins starts: 38 LTS lines from 2.60.3 to 2.568.3, with the 100 and the 300 most installed plugins, core-only and in steps. Built with [keelinfra/jenkins-upgrade-check](https://github.com/keelinfra/jenkins-upgrade-check), which can rehearse your own plugin list.
+
 ---
 
-<sub>Everything here is free and open source: the Keycloak distribution under Apache-2.0, Agent8 under MIT (its jars include LGPL-2.1 classes from JvmDowngrader). For Keycloak, a [per-node subscription](https://keelinfra.io/keycloak/pricing/) adds offline bundles, CVE tracking, upgrade runbooks, and direct access to the people who build it.</sub>
+<sub>Everything here is free and open source: Agent8 under MIT (its jars include LGPL-2.1 classes from JvmDowngrader), jenkins-upgrade-check under Apache-2.0. The earlier Keycloak distribution was [discontinued](https://keelinfra.io/keycloak/) on 24 October 2026.</sub>
