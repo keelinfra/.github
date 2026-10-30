@@ -78,83 +78,137 @@ def lockup(mark_px, text_px, gap=None):
             f'{wordmark_svg(text_px)}</div></div>')
 
 pages = {}
+sizes = {}
+
+TAGLINE = "Open-source tools that keep Jenkins, GitLab and their build hosts current."
+PRODUCTS_LINE = ("Agent8 · Extended Security for Jenkins 2.541.x · Upgrade matrix · AIX Runner"
+                 f"&nbsp;&nbsp;—&nbsp;&nbsp;<span style=\"color:{AMBER};\">keelinfra.io</span>")
+
+def add(name, w, h, body):
+    pages[name] = page(w, h, body)
+    sizes[name] = (w, h)
+
+def chips(items):
+    return '<div class="chips">' + "".join(f'<div class="chip">{c}</div>' for c in items) + "</div>"
 
 # ---------- 1. GitHub social preview — org / generic (1280x640) ----------
-pages["social-preview"] = page(1280, 640, f"""
+add("social-preview", 1280, 640, f"""
 <svg class="ripples" width="620" height="640" viewBox="0 0 620 640">{keel_ripples(640, x0=330)}</svg>
 <div style="position:absolute; inset:0; padding:72px 80px; display:flex; flex-direction:column;">
   {lockup(96, 74)}
-  <div style="margin-top:64px; font-size:57px; font-weight:600; line-height:1.22; max-width:900px;">
-    Production-ready, self-hosted<br>open-source infrastructure.
+  <div style="margin-top:58px; font-size:54px; font-weight:600; line-height:1.22; max-width:1000px;">
+    Open-source tools that keep Jenkins,<br>GitLab and their build hosts current.
   </div>
-  <div class="chips" style="margin-top:44px;">
-    <div class="chip"><b>HA</b> out of the box</div>
-    <div class="chip"><b>Backups</b> &amp; PITR</div>
-    <div class="chip"><b>Observability</b></div>
-    <div class="chip"><b>Tested</b> upgrades</div>
-  </div>
+  <div style="margin-top:40px;">{chips([
+    "<b>Agent8</b> for Jenkins",
+    "<b>Extended Security</b> 2.541.x",
+    "<b>Upgrade</b> matrix",
+    "<b>AIX Runner</b> for GitLab"])}</div>
   <div style="margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between;">
-    <div class="term mono"><span class="p">$</span> ./configure &amp;&amp; ./install&nbsp;&nbsp;<span class="c"># ~10 minutes</span></div>
+    <div class="domain">Open source · tested in public</div>
     <div class="domain"><b>keelinfra</b>.io</div>
   </div>
 </div>""")
 
-# ---------- 2. GitHub social preview — keycloak repo (1280x640) ----------
-pages["social-preview-keycloak"] = page(1280, 640, f"""
+# ---------- 2. GitHub social previews — one per product repo (1280x640) ----------
+# Upload each to github.com/keelinfra/<repo> → Settings → Social preview.
+# Keep claims durable: no version numbers or counts that change with each run.
+PRODUCTS = [
+    dict(repo="agent8",
+         headline="Jenkins agents for build hosts<br>stuck on Java 8, 11 or 17.",
+         sub="The controller moves to Java 21. AIX, Solaris, <span style=\"white-space:nowrap\">HP-UX</span> and older Linux hosts keep their Java.",
+         chips=["<b>Java</b> 8 · 11 · 17", "<b>Checksum</b>-verified install",
+                "<b>Ansible</b> for fleets", "<b>MIT</b>"],
+         note="Open source · tested in public CI",
+         url="<b>keelinfra</b>.io/jenkins"),
+    dict(repo="jenkins-extended-security",
+         headline="Jenkins core security fixes<br>for 2.541.x on Java 17.",
+         sub="Backports for the last LTS that runs on Java 17, for the time until you can move to Java 21.",
+         chips=["<b>Core</b>, Remoting, Stapler", "<b>Reproducible</b> WAR",
+                "<b>SBOM</b> &amp; attestation", "<b>MIT</b>"],
+         note="Unofficial · not a Jenkins project release",
+         url="github.com/<b>keelinfra</b>"),
+    dict(repo="aix-runner",
+         headline="GitLab Runner for<br>AIX 7.2 and 7.3.",
+         sub="Built from the unmodified upstream release, with four small dependency patches. ppc64.",
+         chips=["<b>Upstream</b> runner", "<b>Shell</b> executor", "<b>Experimental</b>", "<b>MIT</b>"],
+         note="Unofficial · not affiliated with GitLab Inc.",
+         url="github.com/<b>keelinfra</b>"),
+    dict(repo="jenkins-upgrade-check",
+         headline="Tested upgrade paths<br>for old Jenkins controllers.",
+         sub="Every LTS line since 2.60.3, upgraded in rehearsal with the most installed plugins: what broke, and the stops that work.",
+         chips=["<b>Upgrade</b> matrix", "<b>Planned</b> stops",
+                "<b>Rehearse</b> your own plugins", "<b>Apache-2.0</b>"],
+         note="Open source · tested in public CI",
+         url="<b>keelinfra</b>.io/jenkins/upgrade-matrix"),
+    dict(repo="release-ledger",
+         headline="EU Cyber Resilience Act evidence,<br>recorded by your release pipeline.",
+         sub="An SBOM and signed provenance for every release, and a daily check of every supported version for exploited vulnerabilities.",
+         chips=["<b>GitHub</b> Action", "<b>SBOM</b> per release",
+                "<b>Exploited-vuln</b> alerts", "<b>Apache-2.0</b>"],
+         note="Open source",
+         url="<b>keelinfra</b>.io/cra"),
+    dict(repo="release-integrity",
+         headline="Could someone swap the files<br>in a GitHub release?",
+         sub="A monthly scan of popular Go and Rust CLI releases: immutable releases, provenance, signatures, checksums.",
+         chips=["<b>Monthly</b> scan", "<b>Open</b> data, CC BY 4.0", "<b>Apache-2.0</b>"],
+         note="Open source · open data",
+         url="github.com/<b>keelinfra</b>"),
+]
+
+for p in PRODUCTS:
+    add(f"social-preview-{p['repo']}", 1280, 640, f"""
 <svg class="ripples" width="620" height="640" viewBox="0 0 620 640">{keel_ripples(640, x0=330)}</svg>
-<div style="position:absolute; inset:0; padding:72px 80px; display:flex; flex-direction:column;">
-  <div style="display:flex;align-items:center;gap:24px;">{mark_svg(84)}
-    <div style="display:flex;align-items:center;gap:16px;padding-top:4px;">{wordmark_svg(56)}
-      <span style="color:{MUTED};font-size:56px;font-weight:400;margin-top:-8px;">/</span>
-      <span style="color:{AMBER};font-size:52px;font-weight:600;letter-spacing:.5px;">keycloak</span>
+<div style="position:absolute; inset:0; padding:68px 80px; display:flex; flex-direction:column;">
+  <div style="display:flex;align-items:center;gap:22px;">{mark_svg(72)}
+    <div style="display:flex;align-items:center;gap:14px;padding-top:4px;">{wordmark_svg(44)}
+      <span style="color:{MUTED};font-size:46px;font-weight:400;margin-top:-6px;">/</span>
+      <span style="color:{AMBER};font-size:42px;font-weight:600;letter-spacing:.3px;">{p['repo']}</span>
     </div>
   </div>
-  <div style="margin-top:56px; font-size:64px; font-weight:600;">Keycloak, production-ready.</div>
-  <div style="margin-top:22px; font-size:35px; font-weight:500; color:{MUTED}; line-height:1.5; max-width:880px;">
-    HA cluster · PostgreSQL failover · backups &amp; PITR · monitoring · tested upgrades
-  </div>
+  <div style="margin-top:52px; font-size:58px; font-weight:600; line-height:1.18;">{p['headline']}</div>
+  <div style="margin-top:22px; font-size:27px; font-weight:500; color:{MUTED}; line-height:1.45; max-width:1040px; text-wrap:balance;">{p['sub']}</div>
+  <div style="margin-top:34px;">{chips(p['chips'])}</div>
   <div style="margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between;">
-    <div class="term mono"><span class="p">$</span> ./configure -c examples/ha-3node.yml &amp;&amp; ./install<br>
-      <span class="c"># ~10 minutes on 3 clean VMs — on your own infrastructure</span></div>
-    <div class="domain"><b>keelinfra</b>.io/keycloak</div>
+    <div class="domain">{p['note']}</div>
+    <div class="domain">{p['url']}</div>
   </div>
 </div>""")
 
 # ---------- 3. X / Twitter header (1500x500) ----------
-pages["banner-x"] = page(1500, 500, f"""
+add("banner-x", 1500, 500, f"""
 <svg class="ripples" width="560" height="500" viewBox="0 0 560 500">{keel_ripples(500, x0=300)}</svg>
 <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-bottom:8px;">
   {lockup(110, 86)}
   <div style="margin-top:38px; font-size:34px; font-weight:500; color:{INK}; letter-spacing:.2px;">
-    Production-ready, self-hosted open-source infrastructure.
+    {TAGLINE}
   </div>
   <div style="margin-top:20px; font-size:24px; color:{MUTED}; font-weight:500;">
-    HA · Backups &amp; PITR · Observability · Tested upgrades&nbsp;&nbsp;—&nbsp;&nbsp;<span style="color:{AMBER};">keelinfra.io</span>
+    {PRODUCTS_LINE}
   </div>
 </div>""")
 
 # ---------- 4. LinkedIn personal cover (1584x396) ----------
-pages["banner-linkedin"] = page(1584, 396, f"""
+add("banner-linkedin", 1584, 396, f"""
 <svg class="ripples" width="520" height="396" viewBox="0 0 520 396">{keel_ripples(396, x0=280)}</svg>
 <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding-left:210px; padding-bottom:30px;">
   {lockup(92, 72)}
   <div style="margin-top:30px; font-size:29px; font-weight:500;">
-    Production-ready, self-hosted open-source infrastructure.
+    {TAGLINE}
   </div>
   <div style="margin-top:14px; font-size:22px; color:{MUTED}; font-weight:500;">
-    HA · Backups &amp; PITR · Observability · Tested upgrades&nbsp;&nbsp;—&nbsp;&nbsp;<span style="color:{AMBER};">keelinfra.io</span>
+    {PRODUCTS_LINE}
   </div>
 </div>""")
 
 # ---------- 5. LinkedIn company cover (1128x191) ----------
-pages["banner-linkedin-company"] = page(1128, 191, f"""
+add("banner-linkedin-company", 1128, 191, f"""
 <svg class="ripples" width="330" height="191" viewBox="0 0 330 191">{keel_ripples(191, n=4, x0=180)}</svg>
 <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:34px; padding-left:60px;">
   {lockup(64, 50)}
   <div style="width:1.5px; height:64px; background:{LINE};"></div>
-  <div style="font-size:21px; color:{MUTED}; font-weight:500; line-height:1.5;">
-    Production-ready, self-hosted open-source infrastructure.<br>
-    <span style="color:{INK};">HA · Backups · Observability · Tested upgrades</span>
+  <div style="font-size:20px; color:{MUTED}; font-weight:500; line-height:1.5;">
+    Open-source tools that keep Jenkins, GitLab<br>and their build hosts current.
     &nbsp;—&nbsp; <span style="color:{AMBER};">keelinfra.io</span>
   </div>
 </div>""")
@@ -165,8 +219,5 @@ for name, html in pages.items():
         f.write(html)
     print("wrote", name + ".html")
 
-sizes = {"social-preview": (1280, 640), "social-preview-keycloak": (1280, 640),
-         "banner-x": (1500, 500), "banner-linkedin": (1584, 396),
-         "banner-linkedin-company": (1128, 191)}
 with open(os.path.join(BRAND, "sizes.json"), "w") as f:
     json.dump(sizes, f)

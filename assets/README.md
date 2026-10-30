@@ -23,8 +23,13 @@ Wordmark face: **Avenir Next Demi Bold**, lowercase, converted to outlines (no f
 | `avatar.png` | 1024×1024 | GitHub org avatar · X profile photo · LinkedIn company logo |
 | `logo-mark-navy.svg` / `logo-mark-amber.svg` | vector | bare mark for light / dark surfaces, favicons |
 | `wordmark-light.svg` / `wordmark-dark.svg` | vector | horizontal lockup for light / dark backgrounds |
-| `social-preview.png` | 1280×640 | GitHub social preview, org-level / generic repos |
-| `social-preview-keycloak.png` | 1280×640 | `keelinfra/keycloak` → Settings → Social preview |
+| `social-preview.png` | 1280×640 | GitHub social preview for org-level / generic repos (`keelinfra/keelinfra.io`, `keelinfra/.github`) · default `og:image` on keelinfra.io |
+| `social-preview-agent8.png` | 1280×640 | `keelinfra/agent8` → Settings → Social preview |
+| `social-preview-jenkins-extended-security.png` | 1280×640 | `keelinfra/jenkins-extended-security` → Settings → Social preview |
+| `social-preview-aix-runner.png` | 1280×640 | `keelinfra/aix-runner` → Settings → Social preview |
+| `social-preview-jenkins-upgrade-check.png` | 1280×640 | `keelinfra/jenkins-upgrade-check` → Settings → Social preview |
+| `social-preview-release-ledger.png` | 1280×640 | `keelinfra/release-ledger` → Settings → Social preview |
+| `social-preview-release-integrity.png` | 1280×640 | `keelinfra/release-integrity` → Settings → Social preview |
 | `banner-x.png` | 1500×500 | X / Twitter profile header |
 | `banner-linkedin.png` | 1584×396 | LinkedIn personal profile cover |
 | `banner-linkedin-company.png` | 1128×191 | LinkedIn company page cover |
