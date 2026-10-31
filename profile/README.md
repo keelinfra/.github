@@ -7,7 +7,7 @@
        src="https://raw.githubusercontent.com/keelinfra/.github/main/assets/wordmark-light.svg">
 </picture>
 
-**Open-source tools that keep Jenkins, GitLab and their build hosts current.**
+**Tested, open-source builds for CI that can't upgrade yet, kept running until it can.**
 
 Jenkins agents for legacy build hosts · security fixes for Jenkins 2.541.x on Java 17 · a tested upgrade path for old controllers · GitLab Runner for AIX.
 
@@ -17,7 +17,7 @@ Jenkins agents for legacy build hosts · security fixes for Jenkins 2.541.x on J
 
 ---
 
-Jenkins moves fast; the machines around it don't. Controllers sit on old LTS lines because nobody knows which plugins will break or because they can't leave Java 17 yet, and build hosts on AIX, Solaris and HP-UX can't run the Java a current agent needs. keelinfra builds the tools and publishes the test data that get them current again.
+Jenkins moves fast; the machines around it don't. Controllers sit on old LTS lines because nobody knows which plugins will break or because they can't leave Java 17 yet, and build hosts on AIX, Solaris and HP-UX can't run the Java a current agent needs. keelinfra keeps shipping tested builds for them, publishes the test data, and maps the way out.
 
 ### [keelinfra/agent8 →](https://github.com/keelinfra/agent8)
 
