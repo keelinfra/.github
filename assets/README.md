@@ -47,6 +47,23 @@ Theme-aware wordmark:
 </picture>
 ```
 
+## README artwork
+
+The heroes and project cards in the org profile and the repository READMEs are SVGs drawn by `src/readme/readme_art.py`, in the keelinfra.io visual language (IBM Plex, navy and amber, the release-lines diagram, the matrix strip). Text is converted to outlines, so they look the same everywhere with no font download; each comes in a light and a dark version for `<picture>`.
+
+| File | Use |
+|---|---|
+| `readme/profile-hero-{light,dark}.svg` | top of `profile/README.md` |
+| `readme/card-<repo>-{light,dark}.svg` | project cards in `profile/README.md` |
+| `<repo>/.github/readme/hero-{light,dark}.svg` | top of agent8, jenkins-extended-security and jenkins-upgrade-check READMEs |
+
+The facts in them (current LTS, latest 2.541.x release, CVE count, matrix) are constants at the top of the script, and the matrix strip is drawn from `matrix.json`. After a release or a new matrix, update them and run, with the repositories cloned side by side:
+
+```bash
+pip install fonttools brotli uharfbuzz
+python3 src/readme/readme_art.py --repos ..   # writes here and into ../<repo>/.github/readme/
+```
+
 ## Regenerating
 
 Everything is generated from code — no design tool needed:
