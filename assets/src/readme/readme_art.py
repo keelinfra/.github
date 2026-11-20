@@ -51,7 +51,7 @@ THEMES = {
         amber="#e8a33d", navy="#0b2239", chip_bg="#eef1f5", chip_ink="#3b4a59",
         ok_bg="#e6f4ec", ok_ink="#145c3b", exp_bg="#fdf1dc", exp_ink="#7a4705",
         st_ok="#1f8a5a", st_part="#d99a2b", st_no="#c8412f", bad="#b4321f", good="#17734a",
-        shadow="#0f1c2a", shadow_op="0.10", ctl_stroke="#24425f",
+        shadow="#0f1c2a", shadow_op="0.10", ctl_stroke="#24425f", tile_stroke="none",
     ),
     "dark": dict(
         bg="#0c141d", panel="#121e2a", ink="#e4ecf3", body="#c3d0dc", muted="#8fa1b3",
@@ -59,7 +59,7 @@ THEMES = {
         amber="#e8a33d", navy="#0b2239", chip_bg="#1c2a38", chip_ink="#c3d0dc",
         ok_bg="#12352a", ok_ink="#8fe0b5", exp_bg="#3a2a10", exp_ink="#f3cf8f",
         st_ok="#2e9d6a", st_part="#bf8a1c", st_no="#e0566a", bad="#f0788a", good="#4cc38a",
-        shadow="#000000", shadow_op="0.45", ctl_stroke="#2d4f70",
+        shadow="#000000", shadow_op="0.45", ctl_stroke="#2d4f70", tile_stroke="#2d4f70",
     ),
 }
 
@@ -177,7 +177,7 @@ def tile(x, y, s, icon, t):
     """Project icon: amber line icon on a navy tile, as on keelinfra.io."""
     k = s / 48
     return (f'<g transform="translate({x} {y}) scale({k:.4f})">'
-            f'<rect width="48" height="48" rx="10" fill="{t["navy"]}"/>'
+            f'<rect width="48" height="48" rx="10" fill="{t["navy"]}" stroke="{t["tile_stroke"]}"/>'
             f'<g transform="translate(11 11)" fill="none" stroke="#e8a33d" stroke-width="2" '
             f'stroke-linecap="round" stroke-linejoin="round">{ICONS[icon]}</g></g>')
 
@@ -284,7 +284,7 @@ def release_lines(ox, oy, t, compact=False):
     """Upstream LTS line and the keelinfra 2.541.x branch, in a 488 wide box."""
     m = "mono"
     o = ""
-    o += text(ox, oy + 16, "UPSTREAM JENKINS LTS", 14, t["muted"], m, 600, ls=1.6)
+    o += text(ox, oy + 16, "UPSTREAM JENKINS LTS", 15.5, t["muted"], m, 600, ls=1.6)
     y = oy + 82
     xs = (ox + 78, ox + 262, ox + 410)
     o += f'<path d="M{ox} {y}H{ox + 478}" stroke="{t["line_strong"]}" stroke-width="2.5" fill="none"/>'
@@ -292,9 +292,9 @@ def release_lines(ox, oy, t, compact=False):
           f'fill="none" stroke-linecap="round" stroke-linejoin="round"/>')
     for x, v in zip(xs, ("2.541.3", "2.555.1", UPSTREAM_LTS)):
         o += f'<circle cx="{x}" cy="{y}" r="7.5" fill="{t["panel"]}" stroke="{t["muted"]}" stroke-width="2.5"/>'
-        o += text(x, y - 20, v, 17, t["ink"], m, 500, anchor="middle")
-    o += text(ox + 20, y + 32, "Java 17", 15, t["muted"], m, 400, anchor="middle")
-    o += text((xs[1] + xs[2]) / 2, y + 32, "Java 21 only", 15, t["muted"], m, 400, anchor="middle")
+        o += text(x, y - 21, v, 19, t["ink"], m, 500, anchor="middle")
+    o += text(ox + 22, y + 34, "Java 17", 16.5, t["muted"], m, 400, anchor="middle")
+    o += text((xs[1] + xs[2]) / 2, y + 34, "Java 21 only", 16.5, t["muted"], m, 400, anchor="middle")
     by = y + 118
     path = f"M{xs[0]} {y + 8}C{xs[0]} {by - 40} {xs[0] + 36} {by} {xs[0] + 100} {by}H{ox + 478}"
     o += (f'<path class="draw" style="--len:620" d="{path}" stroke="{t["amber"]}" stroke-width="3.2" '
@@ -306,16 +306,16 @@ def release_lines(ox, oy, t, compact=False):
     o += (f'<circle class="pulse" cx="{xs[2]}" cy="{by}" r="7" fill="none" stroke="{t["amber"]}" '
           f'stroke-width="2"/>')
     o += f'<circle cx="{xs[2]}" cy="{by}" r="13" fill="none" stroke="{t["amber"]}" stroke-width="1.6" opacity=".45"/>'
-    o += text(xs[2], by - 24, JES_RELEASE, 17, t["accent"], m, 600, anchor="middle")
-    o += text(xs[0] + 50, by + 46, "keelinfra 2.541.x, still on Java 17", 19, t["ink"], "sans", 600)
-    o += text(xs[0] + 50, by + 72, "with the core security fixes released after it", 15.5, t["muted"], "sans", 400)
-    return o, by + 72 - oy
+    o += text(xs[2] - 6, by - 25, JES_RELEASE, 19, t["accent"], m, 600, anchor="middle")
+    o += text(xs[0] + 50, by + 47, "keelinfra 2.541.x, still on Java 17", 21, t["ink"], "sans", 600)
+    o += text(xs[0] + 50, by + 74, "with the core security fixes released after it", 17, t["muted"], "sans", 400)
+    return o, by + 74 - oy
 
 
 def hosts(ox, oy, t, rows, w=488):
     """Build hosts on old Java -> agent8 -> controller on Java 21."""
-    o = text(ox, oy + 16, "BUILD HOSTS THAT KEEP THEIR JAVA", 14, t["muted"], "mono", 600, ls=1.6)
-    ph, gap, pw = 38, 12, 184
+    o = text(ox, oy + 16, "BUILD HOSTS THAT KEEP THEIR JAVA", 15.5, t["muted"], "mono", 600, ls=1.6)
+    ph, gap, pw = 40, 11, 200
     top = oy + 40
     cys = [top + ph / 2 + i * (ph + gap) for i in range(len(rows))]
     mid = (cys[0] + cys[-1]) / 2
@@ -326,27 +326,27 @@ def hosts(ox, oy, t, rows, w=488):
     for cy, r in zip(cys, rows):
         o += (f'<rect x="{ox}" y="{cy - ph/2}" width="{pw}" height="{ph}" rx="{ph/2}" fill="{t["chip_bg"]}" '
               f'stroke="{t["line_strong"]}"/>')
-        o += text(ox + pw / 2, cy + 5.5, r, 15.5, t["ink"], "mono", 400, anchor="middle")
+        o += text(ox + pw / 2, cy + 6, r, 17, t["ink"], "mono", 400, anchor="middle")
     tx = (ox + pw + cx0) / 2 + 4
-    o += f'<rect x="{tx - 44}" y="{mid - 15}" width="88" height="30" rx="15" fill="{t["amber"]}"/>'
-    o += text(tx, mid + 5.5, "agent8", 15.5, "#0b2239", "mono", 600, anchor="middle")
+    o += f'<rect x="{tx - 46}" y="{mid - 16}" width="92" height="32" rx="16" fill="{t["amber"]}"/>'
+    o += text(tx, mid + 6, "agent8", 17, "#0b2239", "mono", 600, anchor="middle")
     o += (f'<rect x="{cx0}" y="{mid - 40}" width="150" height="80" rx="12" fill="{t["navy"]}" '
           f'stroke="{t["ctl_stroke"]}"/>')
-    o += text(cx0 + 75, mid - 6, "controller", 14, "#8fa6bc", "mono", 400, anchor="middle", ls=1)
-    o += text(cx0 + 75, mid + 22, "Java 21", 19, "#ffffff", "mono", 600, anchor="middle")
+    o += text(cx0 + 75, mid - 7, "controller", 15.5, "#8fa6bc", "mono", 400, anchor="middle", ls=1)
+    o += text(cx0 + 75, mid + 23, "Java 21", 21, "#ffffff", "mono", 600, anchor="middle")
     return o, cys[-1] + ph / 2 - oy
 
 
 def matrix_strip(ox, oy, t, m, w=488):
     rows = [r for r in m["rows"] if r["top"] == 300]
     n = len(rows)
-    lw = 96
+    lw = 106
     gap = 2.4
     cw = (w - lw - gap * (n - 1)) / n
-    o = text(ox, oy + 16, f"EVERY LTS LINE → {m['to']} · 300 PLUGINS", 14, t["muted"], "mono", 600, ls=1.6)
+    o = text(ox, oy + 16, f"EVERY LTS LINE → {m['to']} · 300 PLUGINS", 15.5, t["muted"], "mono", 600, ls=1.6)
     for ri, (label, key) in enumerate((("core only", "core"), ("in steps", "steps"))):
         y = oy + 44 + ri * 76
-        o += text(ox, y + 38, label, 15, t["muted"], "mono", 400)
+        o += text(ox, y + 38, label, 16.5, t["muted"], "mono", 400)
         for i, r in enumerate(rows):
             if key == "core":
                 a = r["asIs"]
@@ -359,13 +359,13 @@ def matrix_strip(ox, oy, t, m, w=488):
             o += (f'<rect class="pop" style="animation-delay:{delay:.2f}s" x="{x:.1f}" y="{y}" '
                   f'width="{cw:.1f}" height="60" rx="3" fill="{t["st_" + cls]}"/>')
     ty = oy + 44 + 2 * 76 + 6
-    picks = [0] + [i for i, r in enumerate(rows) if r["from"] in ("2.164.3", "2.401.3")] + [n - 1]
+    picks = [0, n - 1]
     for i in picks:
         x = ox + lw + i * (cw + gap)
         end = i == n - 1
         lx = x + cw if end else x
         o += f'<path d="M{lx:.1f} {ty - 6}V{ty + 16}" stroke="{t["line_strong"]}" stroke-width="1.5"/>'
-        o += text(lx + (-6 if end else 6), ty + 12, rows[i]["from"], 13.5, t["muted"], "mono", 400,
+        o += text(lx + (-6 if end else 6), ty + 12, rows[i]["from"], 15, t["muted"], "mono", 400,
                   anchor="end" if end else "start")
     return o, ty + 16 - oy, rows
 
@@ -374,10 +374,12 @@ def stat_row(ox, y, w, items, t):
     """Big mono figures with a small label underneath, evenly spread."""
     o = f'<path d="M{ox} {y}H{ox + w}" stroke="{t["line_strong"]}" stroke-dasharray="2 5"/>'
     cw = w / len(items)
+    bs = min(fit(big, 30, cw - 14, "mono", 600) for big, _, _ in items)
+    ss = min(fit(small, 16, cw - 8) for _, small, _ in items)
     for i, (big, small, color) in enumerate(items):
         x = ox + i * cw
-        o += text(x, y + 44, big, fit(big, 26, cw - 14, "mono", 600), color or t["ink"], "mono", 600)
-        o += text(x, y + 70, small, fit(small, 14.5, cw - 10), t["muted"], "sans", 400)
+        o += text(x, y + 46, big, bs, color or t["ink"], "mono", 600)
+        o += text(x, y + 74, small, ss, t["muted"], "sans", 400)
     return o
 
 # ---------------------------------------------------------------- heroes ----
@@ -390,11 +392,11 @@ def hero(theme, uid, eyebrow, title, tagline, chip_items, diagram, h=520, title_
     o += f'<rect x=".5" y=".5" width="{W - 1}" height="{h - 1}" rx="24" fill="{t["bg"]}" stroke="{t["line"]}"/>'
     o += wordmark(64, 52, wm, theme)
     ts = min(fit(r, 58, 560, "sans", 700, -1.2) for r in title)
-    block = (12 + ts * 1.25 + (len(title) - 1) * ts * 1.08 + 58 + 32 * (len(tagline) - 1)
+    block = (12 + ts * 1.25 + (len(title) - 1) * ts * 1.08 + 58 + 34 * (len(tagline) - 1)
              + (66 if chip_items else 0))
     top = 52 + wm + 14
     e = top + (h - 44 - top - block) / 2 + 12
-    o += text(64, e, eyebrow, 15, t["accent"], "mono", 500, ls=0.6)
+    o += text(64, e, eyebrow, 16.5, t["accent"], "mono", 500, ls=0.6)
     y = e + ts * 1.25
     for i, r in enumerate(title):
         if i:
@@ -409,10 +411,10 @@ def hero(theme, uid, eyebrow, title, tagline, chip_items, diagram, h=520, title_
                 o += text(x, y, part, ts, col, "sans", 700, ls=-1.2)
                 x += width(part, ts, "sans", 700, -1.2) - 1.2
     y += 58
-    o += lines(64, y, tagline, 21, 32, t["body"])
-    y += 32 * (len(tagline) - 1) + 34
+    o += lines(64, y, tagline, 22.5, 34, t["body"])
+    y += 34 * (len(tagline) - 1) + 34
     if chip_items:
-        o += chips(64, y, chip_items, t, 15)
+        o += chips(64, y, chip_items, t, 16)
     cx, cy, cw, ch = 680, 44, 552, h - 88
     o += card(cx, cy, cw, ch, t, uid)
     o += diagram(cx + 32, cy + 32, t)
@@ -448,12 +450,13 @@ def hero_agent8(theme):
                                   "CentOS 6 · Java 8"])
         yy = y + used + 30
         o += f'<path d="M{x} {yy}H{x + 488}" stroke="{t["line_strong"]}" stroke-dasharray="2 5"/>'
-        o += cross(x, yy + 42, 17, t)
-        o += text(x + 26, yy + 42, "stock agent.jar", 15.5, t["ink"], "mono", 500)
-        o += text(x + 182, yy + 42, "UnsupportedClassVersionError", 15.5, t["bad"], "mono", 400)
-        o += check(x + 1, yy + 76, 17, t)
-        o += text(x + 26, yy + 76, "agent8", 15.5, t["ink"], "mono", 500)
-        o += text(x + 182, yy + 76, "connects, builds run", 15.5, t["good"], "mono", 400)
+        o += cross(x, yy + 44, 18, t)
+        o += text(x + 28, yy + 44, "stock agent.jar", 17, t["ink"], "mono", 500)
+        o += text(x + 488, yy + 44, "UnsupportedClassVersionError", fit("UnsupportedClassVersionError", 17, 280, "mono"),
+                  t["bad"], "mono", 400, anchor="end")
+        o += check(x + 1, yy + 80, 18, t)
+        o += text(x + 28, yy + 80, "agent8", 17, t["ink"], "mono", 500)
+        o += text(x + 488, yy + 80, "connects, builds run", 17, t["good"], "mono", 400, anchor="end")
         return o
     body = hero(theme, "a", "jenkins agents · java 8, 11, 17",
                 ["Agent8", "for Jenkins"],
@@ -488,8 +491,8 @@ def hero_upgrade(theme, m):
         lx = x
         for cls, label in (("ok", "every plugin loads"), ("part", "starts, plugins fail"), ("no", "does not start")):
             o += f'<rect x="{lx}" y="{ly - 12}" width="13" height="13" rx="3" fill="{t["st_" + cls]}"/>'
-            o += text(lx + 21, ly, label, 14.5, t["muted"])
-            lx += 21 + width(label, 14.5) + 26
+            o += text(lx + 21, ly, label, 16, t["muted"])
+            lx += 21 + width(label, 16) + 22
         return o
     body = hero(theme, "u", f"jenkins upgrades · 2.60.3 → {m['to']}",
                 ["Jenkins", "upgrade check"],
@@ -542,7 +545,7 @@ CARDS = {
         chips=[("Available", "ok"), ("Tested on AIX · Solaris · HP-UX", "ok")],
         pitch=["Run Jenkins agents on hosts stuck on Java 8, 11",
                "or 17, while the controller moves to Java 21."],
-        checks=["The old host keeps its Java and stays an ordinary node",
+        checks=["The old host keeps its Java, stays an ordinary node",
                 "Tested in CI on Linux, including RHEL/CentOS 6",
                 "A release for each Jenkins version, one install script"]),
     "jenkins-upgrade-check": dict(
@@ -553,12 +556,12 @@ CARDS = {
                "and which need to stop on the way."],
         checks=["38 LTS lines, from 2.60.3 to 2.568.3",
                 "The 100 and the 300 most installed plugins",
-                "Core-only and stepped upgrades, with the Java for each step"]),
+                "Core-only and stepped, with the Java for each step"]),
     "aix-runner": dict(
         icon="runner", title="AIX Runner for GitLab", repo="keelinfra/aix-runner · MIT",
         chips=[("Experimental", "exp"), ("Tested on AIX 7.3", "ok")],
-        pitch=["GitLab Runner for AIX 7.2 and 7.3, which GitLab",
-               "doesn’t ship."],
+        pitch=["GitLab Runner for AIX 7.2 and 7.3,",
+               "which GitLab doesn\u2019t ship."],
         checks=["The unmodified upstream runner, four small patches",
                 "Latest upstream release built daily in CI",
                 "Shell executor tested: jobs, artifacts, cache, cancel"]),
@@ -568,21 +571,21 @@ CARDS = {
 def project_card(theme, key):
     c = CARDS[key]
     t = THEMES[theme]
-    W, H = 640, 360
+    W, H = 640, 380
     uid = "c" + key[:3]
     o = defs(t, uid)
     o += card(1, 1, W - 2, H - 2, t, uid, dots=False, shadow=False)
     o += tile(36, 34, 52, c["icon"], t)
-    ts = fit(c["title"], 26, W - 124 - 36, "sans", 600, -0.4)
-    o += text(104, 58, c["title"], ts, t["ink"], "sans", 600, ls=-0.4)
-    o += text(104, 82, c["repo"], 15, t["muted"], "mono", 400)
-    o += chips(36, 112, c["chips"], t, 14)
-    o += lines(36, 180, c["pitch"], 19.5, 28, t["ink"], weight=500)
-    y = 180 + 28 * (len(c["pitch"]) - 1) + 46
+    ts = fit(c["title"], 28, W - 104 - 30, "sans", 600, -0.4)
+    o += text(104, 59, c["title"], ts, t["ink"], "sans", 600, ls=-0.4)
+    o += text(104, 84, c["repo"], 16, t["muted"], "mono", 400)
+    o += chips(36, 112, c["chips"], t, 15)
+    o += lines(36, 184, c["pitch"], 21, 30, t["ink"], weight=500)
+    y = 184 + 30 * (len(c["pitch"]) - 1) + 50
     for s in c["checks"]:
-        o += check(38, y, 17, t)
-        o += text(66, y, s, fit(s, 16.5, W - 66 - 30), t["body"])
-        y += 32
+        o += check(38, y, 18, t)
+        o += text(68, y, s, fit(s, 18, W - 68 - 28), t["body"])
+        y += 34
     return svg(W, H, c["title"], f'{c["title"]}: {" ".join(c["pitch"])} {". ".join(c["checks"])}.', o)
 
 # ------------------------------------------------------------------ main ----
