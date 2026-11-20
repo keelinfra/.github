@@ -17,6 +17,7 @@ with the keelinfra repositories cloned side by side under --repos. It writes
     agent8/.github/readme/              Agent8 hero
     jenkins-extended-security/.github/readme/
     jenkins-upgrade-check/.github/readme/   (strip drawn from matrix.json)
+    aix-runner/.github/readme/
 """
 import argparse
 import io
@@ -42,6 +43,7 @@ JES_ADVISORY = "2026-10-28"         # newest advisory covered
 MATRIX_URL = ("https://raw.githubusercontent.com/keelinfra/jenkins-upgrade-check/"
               f"matrix/{UPSTREAM_LTS}/matrix.json")
 MATRIX_STARTS = 328                 # Jenkins starts in that matrix run
+AIX_RUNNER = "v19.5.1"              # latest aix-runner release (= upstream gitlab-runner tag)
 
 # ---------------------------------------------------------------- theme ----
 THEMES = {
@@ -312,9 +314,10 @@ def release_lines(ox, oy, t, compact=False):
     return o, by + 74 - oy
 
 
-def hosts(ox, oy, t, rows, w=488):
-    """Build hosts on old Java -> agent8 -> controller on Java 21."""
-    o = text(ox, oy + 16, "BUILD HOSTS THAT KEEP THEIR JAVA", 15.5, t["muted"], "mono", 600, ls=1.6)
+def hosts(ox, oy, t, rows, w=488, lane="BUILD HOSTS THAT KEEP THEIR JAVA", tag="agent8",
+          box=("controller", "Java 21")):
+    """Pills on the left converge through an amber tag into a navy box (agent8 by default)."""
+    o = text(ox, oy + 16, lane, 15.5, t["muted"], "mono", 600, ls=1.6)
     ph, gap, pw = 40, 11, 200
     top = oy + 40
     cys = [top + ph / 2 + i * (ph + gap) for i in range(len(rows))]
@@ -328,12 +331,13 @@ def hosts(ox, oy, t, rows, w=488):
               f'stroke="{t["line_strong"]}"/>')
         o += text(ox + pw / 2, cy + 6, r, 17, t["ink"], "mono", 400, anchor="middle")
     tx = (ox + pw + cx0) / 2 + 4
-    o += f'<rect x="{tx - 46}" y="{mid - 16}" width="92" height="32" rx="16" fill="{t["amber"]}"/>'
-    o += text(tx, mid + 6, "agent8", 17, "#0b2239", "mono", 600, anchor="middle")
+    tw = max(92, width(tag, 17, "mono", 600) + 26)
+    o += f'<rect x="{tx - tw / 2:.1f}" y="{mid - 16}" width="{tw:.1f}" height="32" rx="16" fill="{t["amber"]}"/>'
+    o += text(tx, mid + 6, tag, 17, "#0b2239", "mono", 600, anchor="middle")
     o += (f'<rect x="{cx0}" y="{mid - 40}" width="150" height="80" rx="12" fill="{t["navy"]}" '
           f'stroke="{t["ctl_stroke"]}"/>')
-    o += text(cx0 + 75, mid - 7, "controller", 15.5, "#8fa6bc", "mono", 400, anchor="middle", ls=1)
-    o += text(cx0 + 75, mid + 23, "Java 21", 21, "#ffffff", "mono", 600, anchor="middle")
+    o += text(cx0 + 75, mid - 7, box[0], 15.5, "#8fa6bc", "mono", 400, anchor="middle", ls=1)
+    o += text(cx0 + 75, mid + 23, box[1], 21, "#ffffff", "mono", 600, anchor="middle")
     return o, cys[-1] + ph / 2 - oy
 
 
@@ -508,6 +512,33 @@ def hero_upgrade(theme, m):
                f"those lines. Going through the planned stops, {ok_steps} of {len(rows)} load every plugin.", body)
 
 
+def hero_aix(theme):
+    def diagram(x, y, t):
+        o, used = hosts(x, y, t, ["machineid", "moby/term", "go-billy/v5", "go-git/v5"],
+                        lane=f"GITLAB-RUNNER {AIX_RUNNER} + 4 PATCHES", tag="go build", box=("GOOS=aix", "ppc64"))
+        yy = y + used + 30
+        o += f'<path d="M{x} {yy}H{x + 488}" stroke="{t["line_strong"]}" stroke-dasharray="2 5"/>'
+        o += text(x, yy + 40, "TESTED ON AIX 7.3 \u00b7 SHELL EXECUTOR", 15.5, t["muted"], "mono", 600, ls=1.6)
+        items = ["register", "jobs", "artifacts", "local cache", "git clone", "cancel"]
+        for i, it in enumerate(items):
+            cx = x + (0, 182, 336)[i % 3]
+            cy = yy + 78 + (i // 3) * 34
+            o += check(cx + 1, cy, 18, t)
+            o += text(cx + 28, cy, it, 17, t["ink"], "mono", 400)
+        return o
+    body = hero(theme, "x", "gitlab runner \u00b7 aix 7.2, 7.3 \u00b7 ppc64",
+                ["AIX Runner", "for GitLab"],
+                ["GitLab Runner for AIX 7.2 and 7.3, which GitLab",
+                 "doesn\u2019t ship. The unmodified upstream runner,",
+                 "with four small dependency patches."],
+                [("Experimental", "exp"), ("Tested on AIX 7.3", "ok")],
+                diagram)
+    return svg(1280, 520, "AIX Runner for GitLab",
+               f"The upstream gitlab-runner {AIX_RUNNER}, unmodified, plus patches to four dependencies "
+               f"(machineid, moby/term, go-billy, go-git), built with GOOS=aix GOARCH=ppc64. Tested on AIX 7.3 "
+               f"with the shell executor: register, jobs, artifacts, local cache, git clone and cancel.", body)
+
+
 def hero_profile(theme):
     def diagram(x, y, t):
         o, used = release_lines(x, y, t)
@@ -614,7 +645,8 @@ def main():
         with urllib.request.urlopen(MATRIX_URL) as r:
             m = json.load(r)
     for repo, fn in (("agent8", hero_agent8), ("jenkins-extended-security", hero_jes),
-                     ("jenkins-upgrade-check", lambda th: hero_upgrade(th, m))):
+                     ("jenkins-upgrade-check", lambda th: hero_upgrade(th, m)),
+                     ("aix-runner", hero_aix)):
         root = os.path.join(a.repos, repo)
         if not os.path.isdir(root):
             print(f"  skip {repo}: not in {a.repos}")
