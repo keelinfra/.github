@@ -47,6 +47,8 @@ MATRIX_STARTS = 328                 # Jenkins starts in that matrix run
 AIX_RUNNER = "v19.5.1"              # latest aix-runner release (= upstream gitlab-runner tag)
 BENCH_CONTROLS = 15                 # controls in jenkins-bench (14 CIS + plugin updates)
 BENCH_VERIFIED = "2.541.3 \u00b7 2.580.1"  # LTS lines its e2e fixture runs against
+LEDGER_RELEASE = "v0.1.0"           # latest release-ledger release
+# release-integrity's figures come from its own results/latest.json (--repos).
 
 # ---------------------------------------------------------------- theme ----
 THEMES = {
@@ -344,6 +346,89 @@ def hosts(ox, oy, t, rows, w=488, lane="BUILD HOSTS THAT KEEP THEIR JAVA", tag="
     return o, cys[-1] + ph / 2 - oy
 
 
+GROW = ("<style>.grow{transform-box:fill-box;transform-origin:left;transform:scaleX(0);"
+        "animation:grow 1s cubic-bezier(.6,0,.2,1) forwards}@keyframes grow{to{transform:scaleX(1)}}"
+        "@media (prefers-reduced-motion:reduce){.grow{animation:none;transform:none}}</style>")
+
+
+def verdict_bars(ox, oy, t, r, w=488):
+    """One bar per verdict of a release-integrity scan, swappable ones in amber and red."""
+    o = text(ox, oy + 16, f"LATEST RELEASE OF {r['scanned']} GO AND RUST CLIS", 15.5, t["muted"], "mono", 600,
+             ls=1.6)
+    rows = [("immutable", "st_ok"), ("provenance", "st_ok"), ("signed", "st_ok"),
+            ("checksums only", "st_part"), ("nothing", "st_no")]
+    lw, nw, bh, step = 168, 46, 22, 34
+    bw = w - lw - nw
+    top = max(r[k] for k, _ in rows)
+    y = oy + 30
+    for i, (k, col) in enumerate(rows):
+        if i in (0, 3):
+            head, hc = ("VERIFIABLE", t["good"]) if i == 0 else ("SWAPPABLE, NO VERIFIABLE TRACE", t["bad"])
+            if i == 3:
+                y += 6
+                o += f'<path d="M{ox} {y}H{ox + w}" stroke="{t["line_strong"]}" stroke-dasharray="2 5"/>'
+            o += text(ox, y + 30, head, 14, hc, "mono", 600, ls=1.4)
+            y += 40
+        o += text(ox, y + bh / 2 + 6, k, 17, t["ink"], "mono", 400)
+        o += f'<rect x="{ox + lw}" y="{y}" width="{bw}" height="{bh}" rx="4" fill="{t["chip_bg"]}"/>'
+        o += (f'<rect class="grow" style="animation-delay:{.3 + .12 * i:.2f}s" x="{ox + lw}" y="{y}" '
+              f'width="{max(3, bw * r[k] / top):.1f}" height="{bh}" rx="4" fill="{t[col]}"/>')
+        o += text(ox + w, y + bh / 2 + 6, str(r[k]), 17, t["ink"], "mono", 600, anchor="end")
+        y += step
+    return GROW + o, y - step + bh - oy
+
+
+def ledger_flow(ox, oy, t, w=488):
+    """record: a published release fans out to its evidence; monitor: OSV x KEV/EUVD to an issue."""
+    m = "mono"
+    o = text(ox, oy + 16, "RECORD \u00b7 WHEN A RELEASE IS PUBLISHED", 15.5, t["muted"], m, 600, ls=1.6)
+    ph, gap, pw = 34, 9, 214
+    cys = [oy + 44 + ph / 2 + i * (ph + gap) for i in range(3)]
+    mid = cys[1]
+    bw = 150
+    px = ox + w - pw
+    for cy in cys:
+        o += (f'<path class="flow" d="M{ox + bw} {mid}C{ox + bw + 60} {mid} {px - 60} {cy} {px} {cy}" '
+              f'stroke="{t["amber"]}" stroke-width="2" fill="none" stroke-dasharray="6 3"/>')
+    o += (f'<rect x="{ox}" y="{mid - 38}" width="{bw}" height="76" rx="12" fill="{t["navy"]}" '
+          f'stroke="{t["ctl_stroke"]}"/>')
+    o += text(ox + bw / 2, mid - 7, "release", 15.5, "#8fa6bc", m, 400, anchor="middle", ls=1)
+    o += text(ox + bw / 2, mid + 22, "published", 20, "#ffffff", m, 600, anchor="middle")
+    for cy, label in zip(cys, ("SBOM", "cra-evidence.json", "attestations")):
+        o += (f'<rect x="{px}" y="{cy - ph / 2}" width="{pw}" height="{ph}" rx="{ph / 2}" '
+              f'fill="{t["chip_bg"]}" stroke="{t["line_strong"]}"/>')
+        o += text(px + pw / 2, cy + 6, label, 17, t["ink"], m, 400, anchor="middle")
+    y = cys[-1] + ph / 2 + 34
+    o += f'<path d="M{ox} {y}H{ox + w}" stroke="{t["line_strong"]}" stroke-dasharray="2 5"/>'
+    o += text(ox, y + 44, "MONITOR \u00b7 DAILY, EVERY SUPPORTED RELEASE", 15.5, t["muted"], m, 600, ls=1.6)
+    ry = y + 68
+    nodes = [("OSV", None), ("CISA KEV \u00b7 ENISA EUVD", None), ("issue", "amber")]
+    ws = [width(n, 17, m, 600 if c else 400) + 34 for n, c in nodes]
+    sp = (w - sum(ws)) / (len(nodes) - 1)
+    x = ox
+    for i, ((n, c), nw) in enumerate(zip(nodes, ws)):
+        if c:
+            o += f'<rect x="{x:.1f}" y="{ry}" width="{nw:.1f}" height="34" rx="17" fill="{t["amber"]}"/>'
+            o += text(x + nw / 2, ry + 23, n, 17, "#0b2239", m, 600, anchor="middle")
+        else:
+            o += (f'<rect x="{x:.1f}" y="{ry}" width="{nw:.1f}" height="34" rx="17" fill="{t["chip_bg"]}" '
+                  f'stroke="{t["line_strong"]}"/>')
+            o += text(x + nw / 2, ry + 23, n, 17, t["ink"], m, 400, anchor="middle")
+        if i < len(nodes) - 1:
+            a, b = x + nw + 8, x + nw + sp - 8
+            o += (f'<path class="flow" d="M{a:.1f} {ry + 17}H{b - 2:.1f}" stroke="{t["amber"]}" stroke-width="2" '
+                  f'stroke-dasharray="6 3"/>')
+            o += (f'<path d="M{b - 7:.1f} {ry + 11}l6 6-6 6" stroke="{t["amber"]}" stroke-width="2" fill="none" '
+                  f'stroke-linecap="round" stroke-linejoin="round"/>')
+        x += nw + sp
+    cy = ry + 34 + 48
+    for i, it in enumerate(("24 h warning", "72 h notice", "final report")):
+        cx = ox + (0, 172, 330)[i]
+        o += check(cx + 1, cy, 18, t)
+        o += text(cx + 28, cy, it, 17, t["ink"], m, 400)
+    return o, cy - oy
+
+
 def matrix_strip(ox, oy, t, m, w=488):
     rows = [r for r in m["rows"] if r["top"] == 300]
     n = len(rows)
@@ -542,6 +627,49 @@ def hero_aix(theme):
                f"with the shell executor: register, jobs, artifacts, local cache, git clone and cancel.", body)
 
 
+def hero_integrity(theme, r):
+    pct = round(100 * r["swappable"] / r["scanned"])
+
+    def diagram(x, y, t):
+        o, used = verdict_bars(x, y, t, r)
+        o += stat_row(x, y + used + 20, 488, [
+            (f"{pct}%", "swappable", t["bad"]),
+            (str(r["scanned"]), "releases scanned", None),
+            (r["date"], "last scan", None),
+        ], t)
+        return o
+    body = hero(theme, "i", "github releases \u00b7 go and rust clis \u00b7 monthly",
+                ["Release", "integrity scan"],
+                ["Could someone with write access replace the files",
+                 "in a project\u2019s latest GitHub release, and would",
+                 "a downloader be able to tell?"],
+                [(f"Scanned {r['date']}", "ok"), ("Data CC BY 4.0", None)],
+                diagram)
+    return svg(1280, 520, "Release integrity scan",
+               f"The latest GitHub release of {r['scanned']} Go and Rust command-line tools with at least 1,000 "
+               f"stars, scanned {r['date']}: {r['immutable']} immutable, {r['provenance']} with build provenance, "
+               f"{r['signed']} signed, {r['checksums only']} with checksums only and {r['nothing']} with nothing. "
+               f"{r['swappable']} ({pct}%) could be swapped with no verifiable trace.", body)
+
+
+def hero_ledger(theme):
+    def diagram(x, y, t):
+        o, _ = ledger_flow(x, y, t)
+        return o
+    body = hero(theme, "l", "eu cyber resilience act \u00b7 github actions",
+                ["Release ledger", "for the EU CRA"],
+                ["Evidence for the Cyber Resilience Act, recorded",
+                 "by your release pipeline, and a daily check of",
+                 "every release you still support."],
+                [(f"Released {LEDGER_RELEASE}", "ok"), ("No dependencies", None)],
+                diagram)
+    return svg(1280, 520, "release-ledger: evidence for the EU Cyber Resilience Act",
+               "record: when a release is published, it attaches an SBOM and cra-evidence.json and signs "
+               "attestations. monitor: daily, every release inside its support period is checked against OSV; "
+               "when a vulnerability is listed as actively exploited by CISA KEV or ENISA EUVD, it opens an issue "
+               "with the Article 14 checklist: 24-hour early warning, 72-hour notification, final report.", body)
+
+
 def hero_profile(theme):
     def diagram(x, y, t):
         o, used = release_lines(x, y, t)
@@ -701,9 +829,13 @@ def main():
     else:
         with urllib.request.urlopen(MATRIX_URL) as r:
             m = json.load(r)
+    latest = os.path.join(a.repos, "release-integrity", "results", "latest.json")
+    integrity = json.load(open(latest)) if os.path.exists(latest) else None
     for repo, fn in (("agent8", hero_agent8), ("jenkins-extended-security", hero_jes),
                      ("jenkins-upgrade-check", lambda th: hero_upgrade(th, m)),
-                     ("aix-runner", hero_aix), ("jenkins-bench", hero_bench)):
+                     ("aix-runner", hero_aix), ("jenkins-bench", hero_bench),
+                     ("release-ledger", hero_ledger),
+                     ("release-integrity", lambda th: hero_integrity(th, integrity))):
         root = os.path.join(a.repos, repo)
         if not os.path.isdir(root):
             print(f"  skip {repo}: not in {a.repos}")
