@@ -18,6 +18,7 @@ with the keelinfra repositories cloned side by side under --repos. It writes
     jenkins-extended-security/.github/readme/
     jenkins-upgrade-check/.github/readme/   (strip drawn from matrix.json)
     aix-runner/.github/readme/
+    jenkins-bench/.github/readme/
 """
 import argparse
 import io
@@ -44,6 +45,8 @@ MATRIX_URL = ("https://raw.githubusercontent.com/keelinfra/jenkins-upgrade-check
               f"matrix/{UPSTREAM_LTS}/matrix.json")
 MATRIX_STARTS = 328                 # Jenkins starts in that matrix run
 AIX_RUNNER = "v19.5.1"              # latest aix-runner release (= upstream gitlab-runner tag)
+BENCH_CONTROLS = 15                 # controls in jenkins-bench (14 CIS + plugin updates)
+BENCH_VERIFIED = "2.541.3 \u00b7 2.580.1"  # LTS lines its e2e fixture runs against
 LEDGER_RELEASE = "v0.1.0"           # latest release-ledger release
 # release-integrity's figures come from its own results/latest.json (--repos).
 
@@ -688,6 +691,60 @@ def hero_profile(theme):
                f"to a Java 21 controller through Agent8.", body)
 
 
+def findings(ox, oy, t, rows, w=488, lane="SCAN --DEMO \u00b7 THE BUNDLED SAMPLE"):
+    """Report rows: a status pill, the control and what the scan saw."""
+    o = text(ox, oy + 16, lane, 15.5, t["muted"], "mono", 600, ls=1.6)
+    rh, pw, ph = 47, 86, 30
+    kinds = {"FAIL": (t["st_no"], "#ffffff", None), "PASS": (t["ok_bg"], t["ok_ink"], None),
+             "MANUAL": (t["exp_bg"], t["exp_ink"], t["st_part"])}
+    for i, (status, cid, what) in enumerate(rows):
+        y = oy + 38 + i * rh
+        cy = y + ph / 2
+        bg, ink, stroke = kinds[status]
+        s = f' stroke="{stroke}" stroke-width="1.4"' if stroke else ""
+        o += f'<g class="pop" style="animation-delay:{0.3 + 0.18 * i:.2f}s">'
+        o += f'<rect x="{ox}" y="{y}" width="{pw}" height="{ph}" rx="{ph / 2}" fill="{bg}"{s}/>'
+        o += text(ox + pw / 2, cy + 5.5, status, 14.5, ink, "mono", 600, anchor="middle", ls=0.6)
+        o += text(ox + pw + 14, cy + 6, cid, 16, t["accent"], "mono", 500)
+        tx = ox + pw + 14 + width("CIS-2.1.6", 16, "mono", 500) + 16
+        o += text(tx, cy + 6, what, fit(what, 16.5, ox + w - tx), t["ink"], "sans", 400)
+        o += "</g>"
+        if i < len(rows) - 1:
+            ly = y + ph + (rh - ph) / 2
+            o += f'<path d="M{ox} {ly:.1f}H{ox + w}" stroke="{t["line"]}"/>'
+    return o, 38 + (len(rows) - 1) * rh + ph
+
+
+def hero_bench(theme):
+    def diagram(x, y, t):
+        o, used = findings(x, y, t, [
+            ("FAIL", "CIS-2.1.6", "anonymous GET of the API returned 200"),
+            ("FAIL", "CIS-2.2.3", "2 executors on the built-in node"),
+            ("FAIL", "CIS-2.1.2", "pipeline runs outside the Groovy sandbox"),
+            ("PASS", "CIS-2.1.5", "CSRF protection is enabled"),
+            ("MANUAL", "CIS-2.3.5", "job config needs Job/ExtendedRead"),
+        ])
+        o += stat_row(x, y + used + 28, 488, [
+            (str(BENCH_CONTROLS), "controls, CIS section 2", None),
+            ("GET", "the only request it sends", None),
+            ("MANUAL", "when it can\u2019t see, not PASS", t["accent"]),
+        ], t)
+        return o
+    body = hero(theme, "b", "jenkins \u00b7 cis supply chain \u00b7 read-only",
+                ["Supply-chain audit", "for Jenkins"],
+                ["Scan a controller against the Build Pipelines",
+                 "section of the CIS Software Supply Chain guide.",
+                 "Each finding names the setting that fixes it."],
+                [(f"Verified on {BENCH_VERIFIED}", "ok"), ("Read-only token", None)],
+                diagram)
+    return svg(1280, 520, "jenkins-bench: supply-chain audit for Jenkins",
+               "Report rows from jenkins-bench scanning its bundled sample controller: CIS-2.1.6 FAIL, an anonymous "
+               "GET of the API returned 200; CIS-2.2.3 FAIL, 2 executors on the built-in node; CIS-2.1.2 FAIL, a "
+               "pipeline runs outside the Groovy sandbox; CIS-2.1.5 PASS, CSRF protection is enabled; CIS-2.3.5 "
+               f"MANUAL, the job configuration needs Job/ExtendedRead. {BENCH_CONTROLS} controls from CIS section 2, "
+               "GET requests only, and a control it cannot see reports MANUAL rather than PASS.", body)
+
+
 # ----------------------------------------------------------------- cards ----
 CARDS = {
     "jenkins-extended-security": dict(
@@ -776,7 +833,8 @@ def main():
     integrity = json.load(open(latest)) if os.path.exists(latest) else None
     for repo, fn in (("agent8", hero_agent8), ("jenkins-extended-security", hero_jes),
                      ("jenkins-upgrade-check", lambda th: hero_upgrade(th, m)),
-                     ("aix-runner", hero_aix), ("release-ledger", hero_ledger),
+                     ("aix-runner", hero_aix), ("jenkins-bench", hero_bench),
+                     ("release-ledger", hero_ledger),
                      ("release-integrity", lambda th: hero_integrity(th, integrity))):
         root = os.path.join(a.repos, repo)
         if not os.path.isdir(root):
